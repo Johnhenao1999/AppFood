@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTasks } from "../context/tasksContext";
+import { useNavigate } from "react-router-dom";
 
 function TaskFormPage() {
     const { register, handleSubmit } = useForm();
     const { createTask, getSalchipapasList } = useTasks();
     const [salchipapasList, setSalchipapasList] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState({});
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchSalchipapas = async () => {
@@ -36,6 +38,7 @@ function TaskFormPage() {
         createTask(selectedItemsData);
         console.log(createTask)
         console.log("Datos enviados:", selectedItemsData);
+        navigate("/tasks");
         // Aquí puedes enviar los datos al método createTask
     };
 

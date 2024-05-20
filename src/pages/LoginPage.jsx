@@ -17,7 +17,7 @@ function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/tasks')
+      navigate('/tasks/new')
     }
   }, [isAuthenticated])
 
