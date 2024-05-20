@@ -1,6 +1,6 @@
 import axios from "./axios";
 
-export const getTasksRequest = async () => axios.get("/tasks");
+export const getTasksRequest = async () => axios.get("/salchipapas");
 
 export const createTaskRequest = async (task) => axios.post("/salchipapas", task);
 
