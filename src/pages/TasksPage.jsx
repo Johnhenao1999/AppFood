@@ -1,12 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useTasks } from "../context/tasksContext";
 
 function TasksPage() {
     const { getTasks, tasks } = useTasks();
 
-    useEffect(() => {
+    const stableGetTasks = useCallback(() => {
         getTasks();
     }, [getTasks]);
+
+    useEffect(() => {
+        stableGetTasks();
+    }, [stableGetTasks]);
 
     return (
         <div>
