@@ -30,7 +30,7 @@ function TaskFormPage() {
             name: item.name,
             description: item.description,
             price: item.price,
-            quantity: parseInt(data[`cantidad-${item._id}`]),
+            quantity: Number(data[`cantidad-${item._id}`]),
             sauces: data[`salsa-${item._id}`].split(",").map((salsa) => salsa.trim()), // Convertir la cadena de salsa en un array
         }));
         createTask(selectedItemsData);
