@@ -11,4 +11,4 @@ export const deleteTaskRequest = async (id) => axios.delete(`/tasks/${id}`);
 
 export const getTaskRequest = async (id) => axios.get(`/tasks/${id}`);
 
-export const salchipapasList = async () => axios.get("/salchipapas-list");
+export const salchipapasList = async () => axios.get("/management/salchipapas-list");
