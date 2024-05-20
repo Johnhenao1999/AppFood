@@ -30,10 +30,11 @@ function TaskFormPage() {
             name: item.name,
             description: item.description,
             price: item.price,
-            quantity: data[`cantidad-${item._id}`],
+            quantity: parseInt(data[`cantidad-${item._id}`]),
             sauces: data[`salsa-${item._id}`].split(",").map((salsa) => salsa.trim()), // Convertir la cadena de salsa en un array
         }));
         createTask(selectedItemsData);
+        console.log(createTask)
         console.log("Datos enviados:", selectedItemsData);
         // Aquí puedes enviar los datos al método createTask
     };
