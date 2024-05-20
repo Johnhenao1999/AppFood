@@ -5,6 +5,7 @@ import {
   getTasksRequest,
   getTaskRequest,
   updateTaskRequest,
+  salchipapasList
 } from "../api/tasks";
 
 const TaskContext = createContext();
@@ -26,6 +27,15 @@ export function TaskProvider({ children }) {
         console.log(error);
     }
   };
+
+  const  getSalchipapasList = async () => {
+    try {
+      const res = await salchipapasList();
+      return res.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const deleteTask = async (id) => {
     try {
@@ -71,6 +81,7 @@ export function TaskProvider({ children }) {
         createTask,
         getTask,
         updateTask,
+        getSalchipapasList
       }}
     >
       {children}

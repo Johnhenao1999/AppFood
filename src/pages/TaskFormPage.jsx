@@ -1,89 +1,64 @@
-/* import { useForm } from "react-hook-form"
-import { useTasks } from "../context/tasksContext"
-
-function TaskFormPage() {
-
-    const { register, handleSubmit } = useForm()
-    const {createTask} = useTasks()
-
-    const onSubmit = handleSubmit((data) => {
-        createTask(data)
-    })
-
-    return (
-        <div>
-            <h1>Realiza tu pedido</h1>
-            <form onSubmit={onSubmit}>
-                <input type="text" placeholder="title" {...register("title")} />
-                <textarea name="" placeholder="descript" {...register("description")}></textarea>
-                <button>Save</button>
-            </form>
-        </div>
-    )
-}
-
-export default TaskFormPage */
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTasks } from "../context/tasksContext";
 
 function TaskFormPage() {
     const { register, handleSubmit } = useForm();
-    const { createTask } = useTasks();
-    const [salchipapas, setSalchipapas] = useState([
-        { id: 1, name: "Salchipapa 1", description: "Descripción de la salchipapa 1", price: 5, sauces: ["Ketchup", "Mayonesa"], quantity: 0, status: "pending"},
-        { id: 2, name: "Salchipapa 2", description: "Descripción de la salchipapa 2", price: 6, sauces: ["Ketchup", "Mostaza"], quantity: 0, status: "pending"},
-        { id: 3, name: "Salchipapa 3", description: "Descripción de la salchipapa 3", price: 7, sauces: ["Mayonesa", "Mostaza"], quantity: 0, status: "pending"},
-        { id: 4, name: "Salchipapa 4", description: "Descripción de la salchipapa 4", price: 8, sauces: ["Ketchup", "Salsa BBQ"], quantity: 0,  status: "pending"},
-        { id: 5, name: "Salchipapa 5", description: "Descripción de la salchipapa 5", price: 9, sauces: ["Mostaza", "Salsa Picante"], quantity: 0 , status: "pending"},
-    ]);
+    const { createTask, getSalchipapasList } = useTasks();
+    const [salchipapasList, setSalchipapasList] = useState([]);
+    const [selectedOptions, setSelectedOptions] = useState({});
 
-    const handleCheckboxChange = (id) => {
-        const updatedSalchipapas = salchipapas.map(salchipapa => {
-            if (salchipapa.id === id) {
-                return { ...salchipapa, quantity: salchipapa.quantity === 0 ? 1 : 0 };
-            }
-            return salchipapa;
-        });
-        setSalchipapas(updatedSalchipapas);
+    useEffect(() => {
+        const fetchSalchipapas = async () => {
+            const list = await getSalchipapasList();
+            setSalchipapasList(list);
+        };
+        fetchSalchipapas();
+    }, [getSalchipapasList]);
+
+    const handleCheckboxChange = (e) => {
+        const { name, checked } = e.target;
+        setSelectedOptions((prevOptions) => ({
+            ...prevOptions,
+            [name]: checked,
+        }));
     };
 
-    const onSubmit = handleSubmit(() => {
-        const selectedSalchipapas = salchipapas
-            .filter(salchipapa => salchipapa.quantity > 0)
-            .map(({ name, description, price, sauces, quantity, status }) => ({ name, description, price, sauces, quantity, status }));
-        createTask(selectedSalchipapas);
-        console.log(selectedSalchipapas);
-    });
+    const onSubmit = (data) => {
+        const selectedItems = salchipapasList.filter((item) => selectedOptions[item._id]);
+        const selectedItemsData = selectedItems.map((item) => ({
+            name: item.name,
+            description: item.description,
+            price: item.price,
+            quantity: data[`cantidad-${item._id}`],
+            sauces: data[`salsa-${item._id}`].split(",").map((salsa) => salsa.trim()), // Convertir la cadena de salsa en un array
+        }));
+        createTask(selectedItemsData);
+        console.log("Datos enviados:", selectedItemsData);
+        // Aquí puedes enviar los datos al método createTask
+    };
 
     return (
         <div>
             <h1>Realiza tu pedido</h1>
-            <form onSubmit={onSubmit}>
-                {salchipapas.map(salchipapa => (
-                    <div key={salchipapa.id}>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                {salchipapasList.map((salchipapa) => (
+                    <div key={salchipapa._id}>
+                        <h2>{salchipapa.name}</h2>
+                        <p>{salchipapa.description}</p>
+                        <p>Precio: {salchipapa.price}</p>
+                        <input type="number" {...register(`cantidad-${salchipapa._id}`)} placeholder="Cantidad" />
+                        <input type="text" {...register(`salsa-${salchipapa._id}`)} placeholder="Salsa" />
                         <input
                             type="checkbox"
-                            id={`salchipapa-${salchipapa.id}`}
-                            checked={salchipapa.quantity > 0}
-                            onChange={() => handleCheckboxChange(salchipapa.id)}
-                        />
-                        <label htmlFor={`salchipapa-${salchipapa.id}`}>
-                            {salchipapa.name} - ${salchipapa.price}
-                        </label>
-                        <p>{salchipapa.description}</p>
-                        <p>Salsas: {salchipapa.sauces.join(", ")}</p>
-                        <input
-                            type="number"
-                            {...register(`salchipapa-${salchipapa.id}-quantity`)}
-                            min="0"
-                            max="10"
-                            defaultValue="0"
+                            {...register(`checkbox-${salchipapa._id}`)}
+                            name={salchipapa._id}
+                            checked={selectedOptions[salchipapa._id] || false}
+                            onChange={handleCheckboxChange}
                         />
                     </div>
                 ))}
-                <button type="submit">Guardar</button>
+                <button type="submit">Enviar</button>
             </form>
         </div>
     );
