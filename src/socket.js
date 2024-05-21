@@ -1,7 +1,7 @@
 // socket.js
 import io from 'socket.io-client';
 
-var socket = io('wss://api-devtest-jah.vercel.app/', {transports: ['websocket']});
+var socket = io('https://api-devtest-jah.vercel.app/', {transports: ['websocket']});
 socket.on('connect', function () {
   console.log('connected!');
   socket.emit('greet', { message: 'Hello Mr.Server!' });
