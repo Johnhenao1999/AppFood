@@ -15,16 +15,19 @@ function TasksPage() {
     }, [getTasks]);
 
     useEffect(() => {
-        // Escuchar eventos de WebSocket para actualizaciones de tareas
-        socket.on('taskUpdated', (updatedTask) => {
+        const handleTaskUpdated = (updatedTask) => {
             setTasks((prevTasks) => 
                 prevTasks.map((task) => (task._id === updatedTask._id ? updatedTask : task))
             );
-        });
+        };
 
-        // Limpiar el evento cuando el componente se d esmonte
+        // Escuchar eventos de WebSocket para actualizaciones de tareas
+        socket.on('taskUpdated', handleTaskUpdated);
+
+        // Limpiar el evento cuando el componente se desmonte
         return () => {
-            socket.off('taskUpdated');
+            socket.off('taskUpdated', handleTaskUpdated);
+            socket.disconnect();
         };
     }, [setTasks]);
 
