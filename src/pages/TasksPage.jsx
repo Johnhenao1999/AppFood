@@ -27,9 +27,15 @@ function TasksPage() {
         // Limpiar el evento cuando el componente se desmonte
         return () => {
             socket.off('taskUpdated', handleTaskUpdated);
-            socket.disconnect();
         };
     }, [setTasks]);
+
+    useEffect(() => {
+        // Desconectar el WebSocket cuando el componente se desmonte
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
 
     return (
         <div>
