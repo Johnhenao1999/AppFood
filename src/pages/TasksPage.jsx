@@ -1,41 +1,28 @@
 import { useEffect } from "react";
 import { useTasks } from "../context/tasksContext";
-import io from 'socket.io-client';
-
-const isLocalhost = window.location.href.includes('localhost');
-const socketUrl = isLocalhost ? 'http://localhost:3000' : 'https://api-devtest-jah.vercel.app';
-
-const socket = io(socketUrl);
+import socket from '../socket'; // Importar la instancia del socket
 
 function TasksPage() {
-    const { getTasks, tasks , setTasks } = useTasks();
+    const { getTasks, tasks, setTasks } = useTasks();
 
     useEffect(() => {
         getTasks();
     }, [getTasks]);
 
     useEffect(() => {
-        const handleTaskUpdated = (updatedTask) => {
+        // Escuchar eventos de WebSocket para actualizaciones de tareas
+        socket.on('taskUpdated', (updatedTask) => {
+            console.log('Task updated', updatedTask);
             setTasks((prevTasks) => 
                 prevTasks.map((task) => (task._id === updatedTask._id ? updatedTask : task))
             );
-        };
-
-        // Escuchar eventos de WebSocket para actualizaciones de tareas
-        socket.on('taskUpdated', handleTaskUpdated);
+        });
 
         // Limpiar el evento cuando el componente se desmonte
         return () => {
-            socket.off('taskUpdated', handleTaskUpdated);
+            socket.off('taskUpdated');
         };
     }, [setTasks]);
-
-    useEffect(() => {
-        // Desconectar el WebSocket cuando el componente se desmonte
-        return () => {
-            socket.disconnect();
-        };
-    }, []);
 
     return (
         <div>
