@@ -2,7 +2,10 @@ import { useEffect } from "react";
 import { useTasks } from "../context/tasksContext";
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:3000');
+const isLocalhost = window.location.href.includes('localhost');
+const socketUrl = isLocalhost ? 'http://localhost:3000' : 'https://api-devtest-jah.vercel.app/';
+
+const socket = io(socketUrl);
 
 function TasksPage() {
     const { getTasks, tasks , setTasks } = useTasks();
