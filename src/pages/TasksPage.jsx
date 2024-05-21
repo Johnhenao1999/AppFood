@@ -1,16 +1,29 @@
-import { useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import { useTasks } from "../context/tasksContext";
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:3000');
 
 function TasksPage() {
-    const { getTasks, tasks } = useTasks();
+    const { getTasks, tasks , setTasks } = useTasks();
 
-    const stableGetTasks = useCallback(() => {
+    useEffect(() => {
         getTasks();
     }, [getTasks]);
 
     useEffect(() => {
-        stableGetTasks();
-    }, [stableGetTasks]);
+        // Escuchar eventos de WebSocket para actualizaciones de tareas
+        socket.on('taskUpdated', (updatedTask) => {
+            setTasks((prevTasks) => 
+                prevTasks.map((task) => (task._id === updatedTask._id ? updatedTask : task))
+            );
+        });
+
+        // Limpiar el evento cuando el componente se d esmonte
+        return () => {
+            socket.off('taskUpdated');
+        };
+    }, [setTasks]);
 
     return (
         <div>

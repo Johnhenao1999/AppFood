@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useCallback } from "react";
 import {
   createTaskRequest,
   deleteTaskRequest,
@@ -19,14 +19,14 @@ export const useTasks = () => {
 export function TaskProvider({ children }) {
   const [tasks, setTasks] = useState([]);
 
-  const getTasks = async () => {
-    try{
-        const res = await getTasksRequest();
-        setTasks(res.data);
-    }catch(error){
-        console.log(error);
+  const getTasks = useCallback(async () => {
+    try {
+      const res = await getTasksRequest();
+      setTasks(res.data);
+    } catch (error) {
+      console.log(error);
     }
-  };
+  }, []);
 
   const  getSalchipapasList = async () => {
     try {
@@ -73,15 +73,16 @@ export function TaskProvider({ children }) {
   };
 
   return (
-    <TaskContext.Provider
+    <TaskContext.Provider 
       value={{
         tasks,
         getTasks,
         deleteTask,
         createTask,
-        getTask,
+        getTask, 
         updateTask,
-        getSalchipapasList
+        getSalchipapasList,
+        setTasks
       }}
     >
       {children}
