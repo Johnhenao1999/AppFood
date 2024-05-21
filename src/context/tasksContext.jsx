@@ -1,91 +1,56 @@
-import { createContext, useContext, useState, useCallback } from "react";
-import {
-  createTaskRequest,
-  deleteTaskRequest,
-  getTasksRequest,
-  getTaskRequest,
-  updateTaskRequest,
-  salchipapasList
-} from "../api/tasks";
+import { useEffect } from "react";
+import { useTasks } from "../context/tasksContext";
+import io from 'socket.io-client';
 
-const TaskContext = createContext();
+const isLocalhost = window.location.href.includes('localhost');
+const socketUrl = isLocalhost ? 'http://localhost:3000' : 'https://api-devtest-jah.vercel.app';
 
-export const useTasks = () => {
-  const context = useContext(TaskContext);
-  if (!context) throw new Error("useTasks must be used within a TaskProvider");
-  return context;
-};
+const socket = io(socketUrl);
 
-export function TaskProvider({ children }) {
-  const [tasks, setTasks] = useState([]);
+function TasksPage() {
+    const { getTasks, tasks , setTasks } = useTasks();
 
-  const getTasks = useCallback(async () => {
-    try {
-      const res = await getTasksRequest();
-      setTasks(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+    useEffect(() => {
+        getTasks();
+    }, [getTasks]);
 
-  const  getSalchipapasList = async () => {
-    try {
-      const res = await salchipapasList();
-      return res.data;
-    } catch (error) {
-      console.error(error);
-    }
-  }
+    useEffect(() => {
+        const handleTaskUpdated = (updatedTask) => {
+            setTasks((prevTasks) => 
+                prevTasks.map((task) => (task._id === updatedTask._id ? updatedTask : task))
+            );
+        };
 
-  const deleteTask = async (id) => {
-    try {
-      const res = await deleteTaskRequest(id);
-      if (res.status === 204) setTasks(tasks.filter((task) => task._id !== id));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+        // Escuchar eventos de WebSocket para actualizaciones de tareas
+        socket.on('taskUpdated', handleTaskUpdated);
 
-  const createTask = async (task) => {
-    try {
-      const res = await createTaskRequest(task);
-      console.log(res);
-    } catch (error) {
-      console.log(error);   
-    }
-  };
+        // Limpiar el evento cuando el componente se desmonte
+        return () => {
+            socket.off('taskUpdated', handleTaskUpdated);
+        };
+    }, [setTasks]);
 
-  const getTask = async (id) => {
-    try {
-      const res = await getTaskRequest(id);
-      return res.data;
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    useEffect(() => {
+        // Desconectar el WebSocket cuando el componente se desmonte
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
 
-  const updateTask = async (id, task) => {
-    try {
-      await updateTaskRequest(id, task);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  return (
-    <TaskContext.Provider 
-      value={{
-        tasks,
-        getTasks,
-        deleteTask,
-        createTask,
-        getTask, 
-        updateTask,
-        getSalchipapasList,
-        setTasks
-      }}
-    >
-      {children}
-    </TaskContext.Provider>
-  );
+    return (
+        <div>
+            <h1>Pedidos realizados</h1>
+            <div>
+                {tasks.map(task => (
+                    <div key={task._id}>
+                        <h2>{task.name}</h2>
+                        <p>{task.description}</p>
+                        <p>Estado: {task.status}</p>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 }
+
+export default TasksPage;
