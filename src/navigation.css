@@ -1,0 +1,36 @@
+.vertical-nav {
+    width: 200px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+  }
+  
+  .vertical-nav ul {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+  }
+  
+  .vertical-nav li {
+    width: 100%;
+    padding: 15px 0;
+    text-align: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: #343a40;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .vertical-nav li:hover {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .vertical-nav li:active {
+    background-color: #0056b3;
+  }
+  

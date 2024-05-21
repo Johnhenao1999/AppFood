@@ -1,0 +1,42 @@
+/* TaskFormPage.css */
+
+.tasks-page-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .navigation-vertical {
+    flex: 0 0 auto;
+    width: 200px; /* Ajusta el ancho de la barra de navegación vertical según tus necesidades */
+  }
+  
+  .tasks-table-container {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  
+  .tasks-table-container table {
+    width: 100%; /* O ajusta el ancho de la tabla según tus necesidades */
+    border-collapse: collapse;
+  }
+  
+  .tasks-table-container table th,
+  .tasks-table-container table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+  }
+  
+  .tasks-table-container table th {
+    background-color: #f1f1f1;
+  }
+  
+  .tasks-table-container table th,
+  .tasks-table-container table td {
+    text-align: left;
+  }
+  
+  .tasks-table-container table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
