@@ -59,49 +59,77 @@ function TaskFormPage() {
       <div className="task-form-content">
         <h1>Realiza tu pedido</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <table className="table-container">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Precio</th>
-                <th>Cantidad</th>
-                <th>Salsa</th>
-                <th>Seleccionar</th>
-              </tr>
-            </thead>
-            <tbody>
-              {salchipapasList.map((salchipapa) => (
-                <tr key={salchipapa._id}>
-                  <td>{salchipapa.name}</td>
-                  <td>{salchipapa.description}</td>
-                  <td>{salchipapa.price}</td>
-                  <td>
-                    <input type="number" {...register(`cantidad-${salchipapa._id}`)} placeholder="Cantidad" />
-                  </td>
-                  <td>
-                    <Select
-                      isMulti
-                      options={sauceOptions}
-                      onChange={(selectedOptions) => handleSelectChange(selectedOptions, `salsa-${salchipapa._id}`)}
-                      className="select-multi"
-                    />
-                  </td>
-                  <td className="label-check">
-                    <label>
-                      <input
-                        type="checkbox"
-                        {...register(`checkbox-${salchipapa._id}`)}
-                        name={salchipapa._id}
-                        checked={selectedOptions[salchipapa._id] || false}
-                        onChange={handleCheckboxChange}
-                      />
-                    </label>
-                  </td>
+          <div className="table-container">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th>Precio</th>
+                  <th>Cantidad</th>
+                  <th>Salsa</th>
+                  <th>Seleccionar</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {salchipapasList.map((salchipapa) => (
+                  <tr key={salchipapa._id}>
+                    <td>{salchipapa.name}</td>
+                    <td>{salchipapa.description}</td>
+                    <td>{salchipapa.price}</td>
+                    <td>
+                      <input type="number" {...register(`cantidad-${salchipapa._id}`)} placeholder="Cantidad" />
+                    </td>
+                    <td>
+                      <Select
+                        isMulti
+                        options={sauceOptions}
+                        onChange={(selectedOptions) => handleSelectChange(selectedOptions, `salsa-${salchipapa._id}`)}
+                        className="select-multi"
+                      />
+                    </td>
+                    <td className="label-check">
+                      <label>
+                        <input
+                          type="checkbox"
+                          {...register(`checkbox-${salchipapa._id}`)}
+                          name={salchipapa._id}
+                          checked={selectedOptions[salchipapa._id] || false}
+                          onChange={handleCheckboxChange}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="cards-container">
+            {salchipapasList.map((salchipapa) => (
+              <div className="card" key={salchipapa._id}>
+                <h2>{salchipapa.name}</h2>
+                <p>{salchipapa.description}</p>
+                <p><strong>Precio:</strong> {salchipapa.price}</p>
+                <input type="number" {...register(`cantidad-${salchipapa._id}`)} placeholder="Cantidad" />
+                <Select
+                  isMulti
+                  options={sauceOptions}
+                  onChange={(selectedOptions) => handleSelectChange(selectedOptions, `salsa-${salchipapa._id}`)}
+                  className="select-multi"
+                />
+                <label className="label-check">
+                  <input
+                    type="checkbox"
+                    {...register(`checkbox-${salchipapa._id}`)}
+                    name={salchipapa._id}
+                    checked={selectedOptions[salchipapa._id] || false}
+                    onChange={handleCheckboxChange}
+                  />
+                  Seleccionar
+                </label>
+              </div>
+            ))}
+          </div>
           <button type="submit">Enviar</button>
         </form>
       </div>

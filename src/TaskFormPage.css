@@ -10,6 +10,14 @@
 }
 
 .table-container {
+  display: block; /* Visible en pantallas grandes */
+}
+
+.cards-container {
+  display: none; /* Oculto en pantallas grandes */
+}
+
+.table {
   width: 100%;
   border-collapse: collapse;
 }
@@ -49,4 +57,75 @@ button:hover {
 .select-multi{
   width: 180px;
   margin: 0 auto;
+}
+
+.card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 250px; /* Ajusta el ancho según sea necesario */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 20px;
+  text-align: center;
+}
+
+.card p {
+  margin: 5px 0;
+  text-align: center;
+}
+
+.card input[type="number"] {
+  padding: 5px;
+  width: 100px;
+  box-sizing: border-box;
+  margin: 10px 0;
+}
+
+.card .select-multi {
+  width: 180px;
+  margin: 10px 0;
+}
+
+.label-check {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  .table-container {
+    display: none; /* Ocultar la tabla en pantallas pequeñas */
+  }
+
+  .cards-container {
+    display: flex; /* Mostrar las tarjetas en pantallas pequeñas */
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center; /* Centrar las tarjetas horizontalmente */
+  }
+
+  .card {
+    width: 100%;
+    max-width: 300px; /* Ajustar el tamaño máximo para pantallas pequeñas */
+  }
+
+  .card input[type="number"],
+  .card .select-multi {
+    width: 100%;
+  }
+
+  button {
+    width: 100%;
+    margin-top: 10px;
+  }
 }
