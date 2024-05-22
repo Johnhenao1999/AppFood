@@ -1,8 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import { registerRequest, loginRequest, verifyTokenRequest } from "../api/auth";
-import Cookies from "js-cookie";
-import { set } from "react-hook-form";
-
 
 export const AuthContext = createContext();
 
@@ -20,77 +17,73 @@ export const AuthProvider = ({ children }) => {
     const [errors, setErrors] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const signup = async (user) => {
-        try {
-            const res = await registerRequest(user);
-            setUser(res.data);
-            setIsAuthenticated(true);
-        } catch (error) {
-            setErrors(error.response.data);
-        }
-    };
-
-    const signin = async (user) => {
-        try {
-            const res = await loginRequest(user);
-            setUser(res.data);
-            console.log(res.data)
-            setIsAuthenticated(true);
-        } catch (error) {
-            console.log(error)
-            setErrors(error.response.data);
-        }
-    };
-
-    useEffect(() => {
-        if (errors.length > 0) {
-            const timer = setTimeout(() => {
-                setErrors([])
-            }, 4000)
-            return () => clearTimeout(timer)
-        }
-    }, [errors])
-
     useEffect(() => {
         async function checkLogin() {
-            const cookies = Cookies.get()
-            if (!cookies.token) {
-                setIsAuthenticated(false);
-                setLoading(false);
-                return setUser(null)
-            }
             try {
-                const res = await verifyTokenRequest(cookies.token)
-                console.log(res)
-                if (!res.data) {
-                    setIsAuthenticated(false)
-                    setLoading(false)
-                    return;
+                const storedToken = localStorage.getItem('token');
+                if (storedToken) {
+                    const res = await verifyTokenRequest(storedToken);
+                    setUser(res.data);
+                    setIsAuthenticated(true);
+                } else {
+                    setIsAuthenticated(false);
                 }
-
-                setIsAuthenticated(true)
-                setUser(res.data)
-                setLoading(false)
             } catch (error) {
-                setIsAuthenticated(false)
-                setUser(null)
-                setLoading(false)
+                setIsAuthenticated(false);
+            } finally {
+                setLoading(false);
+            }
+        }
+        checkLogin();
+    }, []);
+
+    const signup = async (userData) => {
+        try {
+            const res = await registerRequest(userData);
+            setUser(res.data);
+            setIsAuthenticated(true);
+            localStorage.setItem('token', res.data.token); // Guardar el token en localStorage
+        } catch (error) {
+            setErrors(error.response.data);
+        }
+    };
+
+    const signin = async (userData) => {
+        try {
+            const res = await loginRequest(userData);
+            console.log("respues login", res)
+            setUser(res.data);
+            setIsAuthenticated(true);
+            const token = res.data.token;
+            localStorage.setItem('token', token);
+            if (localStorage.getItem('token') === token) {
+                console.log('Token guardado correctamente:', token);
+            } else {
+                console.error('Error al guardar el token en localStorage');
             }
 
+        } catch (error) {
+            setErrors(error.response.data);
         }
-        checkLogin()
-    }, [])
+    };
+
+    const signout = () => {
+        setUser(null);
+        setIsAuthenticated(false);
+        localStorage.removeItem('token'); // Eliminar el token del localStorage al cerrar sesión
+    };
 
     return (
         <AuthContext.Provider value={{
             signup,
+            signin,
+            signout,
             user,
             loading,
             isAuthenticated,
-            errors,
-            signin
+            errors
         }}>
             {children}
         </AuthContext.Provider>
-    )
-}
+    );
+};
